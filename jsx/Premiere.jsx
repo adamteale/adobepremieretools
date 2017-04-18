@@ -1,3 +1,6 @@
+// http://cssdk.s3-website-us-east-1.amazonaws.com/sdk/2.1/docs/WebHelp/references/csawlib/com/adobe/premiere/ProjectItem.html
+// https://github.com/Adobe-CEP/Samples/blob/master/PProPanel/jsx/Premiere.jsx#L215
+
 if (typeof($) == 'undefined') $ = {};
 
 believetools = {
@@ -55,6 +58,7 @@ var sequence = app.project.activeSequence;
 // $.writeln(sequence.name);
 // $.writeln(sequence.videoTracks.numTracks);
 
+
 // iterate TrackCollection (videoTracks)
 for (var i=0; i<sequence.videoTracks.numTracks; i++ ){
     
@@ -65,7 +69,25 @@ for (var i=0; i<sequence.videoTracks.numTracks; i++ ){
 
     for (var tracknum=0; tracknum<sequence.videoTracks[i].clips.numTracks; tracknum++ ){
         $.writeln(sequence.videoTracks[i].clips[tracknum].projectItem.name);    
-        $.writeln(sequence.videoTracks[i].clips[tracknum].projectItem.getMediaPath());    
+        
+        var clippath = sequence.videoTracks[i].clips[tracknum].projectItem.getMediaPath();
+        var patharray = clippath.split('/')
+        
+        // get path of assets for the shot
+        var basepath = patharray.slice(0,(patharray.length - 2)).join("/")
+        $.writeln(basepath);    
+
+        // file name
+        $.writeln(patharray[patharray.length - 1]);    
+        
+        var myFolder = new Folder(basepath);
+        
+        if (myFolder.exists){
+          $.writeln("exists " + basepath );    
+        }else{
+            $.writeln("doesn't exist " + basepath );    
+        }
+ 
     }
 }
 
