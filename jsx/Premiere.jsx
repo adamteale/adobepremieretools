@@ -68,12 +68,28 @@ for (var i=0; i<sequence.videoTracks.numTracks; i++ ){
     // $.writeln(sequence.videoTracks[i].mediaType);    
 
     for (var tracknum=0; tracknum<sequence.videoTracks[i].clips.numTracks; tracknum++ ){
-        $.writeln(sequence.videoTracks[i].clips[tracknum].projectItem.name);    
         
-        var clippath = sequence.videoTracks[i].clips[tracknum].projectItem.getMediaPath();
+        var aClip = sequence.videoTracks[i].clips[tracknum].projectItem
+
+        $.writeln(aClip.name);    
+        
+        var clippath = aClip.getMediaPath();
         var patharray = clippath.split('/')
         
         // get path of assets for the shot
+        var filename = patharray.slice((patharray.length - 1), (patharray.length)).join("/")
+        var extensionpos = filename.lastIndexOf(".")
+        var fileextension = filename.slice(extensionpos, filename.length)
+        var filenameSinExt = filename.slice(0,extensionpos)
+        var itemlen = filenameSinExt.split('_').length - 1
+        var versionPadding = filenameSinExt.length
+        var version = Number(filenameSinExt.split('_')[itemlen].slice(1))
+        
+
+        $.writeln(version);            
+        $.writeln();
+
+
         var basepath = patharray.slice(0,(patharray.length - 2)).join("/")
         $.writeln(basepath);    
 
@@ -87,6 +103,11 @@ for (var i=0; i<sequence.videoTracks.numTracks; i++ ){
         }else{
             $.writeln("doesn't exist " + basepath );    
         }
+        
+        
+        // check for higher version
+         var UpItem = File.(aClip.MediaPath.slice(0,(lastIndex+1))+(escape(extension)+1) + ".mov");
+        $.writeln(UpItem );    
  
     }
 }
