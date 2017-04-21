@@ -54,17 +54,39 @@ believetools = {
 }
 
 
+function searchForBinWithName(binName) {
+    var numItemsAtRoot = app.project.rootItem.children.numItems;
+    var foundBin = 0;
+ 
+    for (var i = 0; i < numItemsAtRoot && foundBin == 0; i++) {
+        var currentItem = app.project.rootItem.children[i];
+ 
+        if (currentItem != null && currentItem.name == binName) {
+            foundBin = currentItem;
+        }
+        $.writeln(foundBin);
+    }
+    return foundBin;
+}
+
 var sequence = app.project.activeSequence;
 // $.writeln(sequence.name);
 // $.writeln(sequence.videoTracks.numTracks);
 
+var binToFind = "_tomasActualizadas"
 
+
+var targetBin = searchForBinWithName(binToFind);
+if (targetBin == 0){
+    targetBin = app.project.rootItem.createBin(binToFind);
+}
 // iterate TrackCollection (videoTracks)
 for (var i=0; i<sequence.videoTracks.numTracks; i++ ){
     
-    $.writeln("track: " + sequence.videoTracks[i].id);
+    // track number/id
+    // $.writeln("track: " + sequence.videoTracks[i].id);
     
-    
+    // track media type
     // $.writeln(sequence.videoTracks[i].mediaType);    
 
     for (var tracknum=0; tracknum<sequence.videoTracks[i].clips.numTracks; tracknum++ ){
@@ -81,33 +103,86 @@ for (var i=0; i<sequence.videoTracks.numTracks; i++ ){
         var extensionpos = filename.lastIndexOf(".")
         var fileextension = filename.slice(extensionpos, filename.length)
         var filenameSinExt = filename.slice(0,extensionpos)
-        var itemlen = filenameSinExt.split('_').length - 1
-        var versionPadding = filenameSinExt.length
-        var version = Number(filenameSinExt.split('_')[itemlen].slice(1))
         
-
-        $.writeln(version);            
-        $.writeln();
-
-
-        var basepath = patharray.slice(0,(patharray.length - 2)).join("/")
-        $.writeln(basepath);    
+        var assetName = filenameSinExt.slice(0, -5);
+        $.writeln(assetName);
+        
+        var itemlen = filenameSinExt.split('_').length - 1;
+        var versionPadding = filenameSinExt.length;
+        var version = Number(filenameSinExt.split('_')[itemlen].slice(1));
+        var assetsBasePath = patharray.slice(0,(patharray.length - 2)).join("/");
+        // var shotassetdir = 
+        $.writeln(assetsBasePath);
 
         // file name
-        $.writeln(patharray[patharray.length - 1]);    
+        $.writeln(" ");    
+        $.writeln("looking for latest version of: " + assetName);    
+        $.writeln(" ");    
         
-        var myFolder = new Folder(basepath);
+        var myFolder = new Folder(assetsBasePath);
         
-        if (myFolder.exists){
-          $.writeln("exists " + basepath );    
-        }else{
-            $.writeln("doesn't exist " + basepath );    
+        var versionInc = version
+        var lastKnownVersion = version
+        var possibleFile = clippath
+        
+        // loop until version reaches 1000
+        while (versionInc < 1000){
+
+            versionInc = versionInc + 1;
+            var versionUp = assetName + "_v" + ("000"+versionInc).slice(-3);
+            var possibleVersion = versionUp + fileextension
+            testForPossibleFile = assetsBasePath + "/" + versionUp + "/" + possibleVersion
+
+            var UpItem = File(testForPossibleFile);
+
+            if (UpItem.exists){
+                // $.writeln("exists:" + testForPossibleFile);
+                lastKnownVersion = versionInc
+                possibleFile = testForPossibleFile
+            }
+
         }
         
+        $.writeln("latest version: " + possibleFile);    
+        $.writeln("\n\n");    
         
-        // check for higher version
-         var UpItem = File.(aClip.MediaPath.slice(0,(lastIndex+1))+(escape(extension)+1) + ".mov");
-        $.writeln(UpItem );    
+        var UpItem = File(possibleFile);
+        var vidFiles = new Array;
+        vidFiles.push(UpItem)
+        var myFootage = app.project.importFiles(vidFiles, 1, targetBin, 0);
+
+
+        // if (fileOrFilesToImport) {
+        //     var nameToFind    = 'Tomas actualizadas';
+        //     var targetBin    = $._PPP_.searchForBinWithName(nameToFind);
+        //
+        //     if (targetBin === 0) {
+        //         // If panel can't find the target bin, it creates it.
+        //         app.project.rootItem.createBin(nameToFind);
+        //         targetBin    = $._PPP_.searchForBinWithName(nameToFind);
+        //     }
+        //
+        //     if (targetBin) {
+        //         targetBin.select();
+        //         // We have an array of File objects; importFiles() takes an array of paths.
+        //         var importThese = new Array();
+        //
+        //         if (importThese){
+        //             for (var i = 0; i < fileOrFilesToImport.length; i++) {
+        //                 importThese[i] = fileOrFilesToImport[i].fsName;
+        //             }
+        //             app.project.importFiles(importThese,
+        //                                     1,                // suppress warnings
+        //                                     targetBin,
+        //                                     0);                // import as numbered stills
+        //         }
+        //     } else {
+        //         alert("Could not find or create target bin.");
+        //     }
+        // }
+        
+        $.writeln("Latest version of: " + assetName + " : " + possibleFile);            
+
  
     }
 }
