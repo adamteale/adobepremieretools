@@ -9,7 +9,7 @@
 		<script type="text/javascript">
 
 			function myFunction() {
-				window.__adobe_cep__.evalScript("$._MYFUNCTIONS.traverse_project_items()", callback);
+				window.__adobe_cep__.evalScript("$._ImportUpdateShots.getUpdatedAssets()", callback);
 			}
 
 			function callback(data) {
@@ -27,7 +27,7 @@
 	</head>
 
 	<body>
-		<button onclick="myFunction()">Get File Paths</button>
+		<button onclick="myFunction()">Importar tomas actualizadas</button>
 		<div id="result"></div>
 	</body>
 </html>
